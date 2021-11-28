@@ -12,6 +12,7 @@ class Matr {
     int n, m;
     vector<vector<T>> matr;
 public:
+    Matr();
     Matr(vector<vector<T>>);
     Matr(int n_, int m_);
     pair<int, int>  size() const {return {n, m}; };
@@ -28,14 +29,21 @@ public:
 
 template<typename T>
 Matr<T>::Matr(vector<vector<T>> vect) {
+    n = vect.size();
+    m = vect[0].size();
     matr = vect;
+}
+
+template<typename T>
+Matr<T>::Matr() {
+
 }
 
 template<typename T>
 Matr<T>::Matr(int n_, int m_) {
     n = n_;
     m = m_;
-    vector<vector<T>> res(n, vector<T>(m, 0));
+    vector<vector<T>> res(n, vector<T>(m));
     matr = res;
 }
 
@@ -90,16 +98,18 @@ Matr<T> Matr<T>::operator*(Matr<T>& a) {
 }
 
 template<typename T>
-Matr<T> Matr<T>::operator^(int k) {
-    if (n != m)
-        throw "Can`t elevate not square matrix";
-    return pow(matr, k);
-}
-
-template<typename T>
 Matr<T> pow(Matr<T> matr, int k) {
     if (k == 0) {
-        vector<vector<T>> res(matr.size().first, vector<T>(matr.size().second, 1));
+        vector<vector<T>> res(matr.size().first, vector<T>(matr.size().second));
+        for (int i = 0; i < matr.size().first; i++) {
+            for (int j = 0; j < matr.size().second; j++) {
+                if (i == j) {
+                    res[i][j] = 1;
+                } else {
+                    res[i][j] = 0;
+                }
+            }
+        }
         return Matr(res);
     } else {
         if (k % 2 == 0) {
@@ -111,12 +121,19 @@ Matr<T> pow(Matr<T> matr, int k) {
     }
 }
 
+template<typename T>
+Matr<T> Matr<T>::operator^(int k) {
+    if (n != m)
+        throw "Can`t elevate not square matrix";
+    return pow(Matr(matr), k);
+}
 
 template<typename T>
-ostream& operator<<(ostream& out, const Matr<T>& a) {
+ostream& operator<<(ostream& out, Matr<T>& a) {
     for (int i = 0; i < a.size().first; i++) {
         for (int j = 0; j < a.size().second; j++) {
-            out << a[i][j] << ' ';
+            T ex = a[i][j];
+            out << ex << ' ';
         }
         out << endl;
     }
@@ -124,7 +141,7 @@ ostream& operator<<(ostream& out, const Matr<T>& a) {
 }
 
 template<typename T>
-istream &operator>>(istream& in, SuperVector<T>& a) {
+istream &operator>>(istream& in, Matr<T>& a) {
     for (int i = 0; i < a.size().first; i++) {
         for (int j = 0; j < a.size().second; j++) {
             in >> a[i][j];
